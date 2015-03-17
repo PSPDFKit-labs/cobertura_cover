@@ -55,42 +55,40 @@ defmodule CoberturaCover do
   end
 
   defp packages do
-    :cover.modules
-    |> Enum.map(fn mod  ->
-      class_name = inspect(mod)
-      {mod, class_name}
-    end)
-    |> Enum.group_by(fn {mod, class} ->
-      case Module.split(mod) do
-        [] -> "" # erlang module like :something
-        mods -> mods |> Enum.drop(-1) |> Enum.join(".")
-      end
-    end)
-    |> Enum.map(fn {package, mods} ->
-      classes = Enum.map mods, fn {mod, name} ->
+    [{:package, [name: "", 'line-rate': 0, 'branch-rate': 0, complexity: 1], [
+      classes: Enum.map(:cover.modules, fn mod ->
+        class_name = inspect(mod)
         # <class branch-rate="0.634920634921" complexity="0.0"
         #  filename="PSPDFKit/PSPDFConfiguration.m" line-rate="0.976377952756"
         #  name="PSPDFConfiguration_m">
-        {:class, [name: name], [methods: methods(mod)]}
-      end
-      {:package, [name: package], [classes: classes]}
-    end)
+
+        {:class,
+          [
+            name: inspect(mod),
+            filename: Path.relative_to_cwd(mod.module_info(:compile)[:source]),
+            'line-rate': 0, 'branch-rate': 0, complexity: 1,
+          ],
+          [methods: methods(mod), lines: lines(mod)]
+        }
+      end)
+    ]}]
   end
 
   defp methods(mod) do
     {:ok, functions} = :cover.analyse(mod, :calls, :function)
-    {:ok, lines} = :cover.analyse(mod, :calls, :line)
 
     functions
     |> Stream.map(&elem(&1, 0))
     |> Stream.map(fn {_m, f, a} ->
       # <method name="main" signature="([Ljava/lang/String;)V" line-rate="1.0" branch-rate="1.0">
-      {:method, [name: to_string(f)], [lines: lines(lines, f)]}
+      {:method, [name: to_string(f), signature: "", 'line-rate': 0, 'branch-rate': 0], []}
     end)
     |> Enum.to_list
   end
 
-  defp lines(lines, f) do
+  defp lines(mod) do
+    {:ok, lines} = :cover.analyse(mod, :calls, :line)
+
     lines
     |> Stream.filter(fn {{_m, line}, _hits} -> line != 0 end)
     |> Enum.map(fn {{_m, line}, hits} ->

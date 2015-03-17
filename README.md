@@ -19,7 +19,7 @@ end
 
 defp deps do
   [
-    {:cobertura_cover, "~> 0.9.0"}
+    {:cobertura_cover, "~> 0.9.0", only: :test}
   ]
 end
 ```

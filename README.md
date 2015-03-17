@@ -6,6 +6,8 @@ A plugin for `mix test --cover` that writes a `coverage.xml` file compatible wit
 
 Inspired by [covertool](https://github.com/idubrov/covertool) for Erlang.
 
+![Jenkins Cobertura Plugin](https://github.com/PSPDFKit-labs/cobertura_cover/raw/master/doc/jenkins%E2%80%93screenshot.png)
+
 ## Usage
 
 Put this in your `mix.exs`:

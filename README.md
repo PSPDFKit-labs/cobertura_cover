@@ -38,8 +38,8 @@ def project do
   ]
 end
 
-defp test_coverage("1"), do: [tool: CoberturaCover]
-defp test_coverage(_), do: []
+defp test_coverage(nil), do: []
+defp test_coverage(_), do: [tool: CoberturaCover]
 
 defp deps do
   [
@@ -51,6 +51,6 @@ end
 If you want to get HTML output too you can configure it like this:
 
 ```elixir
-defp test_coverage("1"), do: [tool: CoberturaCover, html_output: "cover"]
-defp test_coverage(_), do: []
+defp test_coverage(nil), do: []
+defp test_coverage(_), do: [tool: CoberturaCover, html_output: "cover"]
 ```
